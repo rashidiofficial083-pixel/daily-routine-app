@@ -35,6 +35,8 @@ class RoutineService : Service() {
             startForeground(1001, notification)
         }
 
+        RoutineWidgetProvider.updateAllWidgets(this)
+
         handler.removeCallbacks(updateRunnable)
         handler.postDelayed(updateRunnable, 60000)
 
@@ -50,6 +52,8 @@ class RoutineService : Service() {
         } else {
             NotificationHelper.showNotification(this, "No active task", "Free time")
         }
+
+        RoutineWidgetProvider.updateAllWidgets(this)
     }
 
     private fun buildNotification(title: String, text: String) =
