@@ -25,17 +25,19 @@ class MainActivity : AppCompatActivity() {
 
         listView = findViewById(R.id.routineListView)
         addButton = findViewById(R.id.addRoutineButton)
+        listView.setOnItemLongClickListener { _, _, position, _ ->
+            showEditDeleteDialog(position)
+            true
+        }
 
         routines = RoutineStorage.loadRoutines(this).toMutableList()
         refreshList()
-if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 100)
         }
 
         val serviceIntent = Intent(this, RoutineService::class.java)
         startForegroundService(serviceIntent)
-
-
 
         addButton.setOnClickListener {
             showAddRoutineDialog()
@@ -75,6 +77,62 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         taskName
                     )
                     routines.add(newItem)
+                    routines.sortBy { it.startHour * 60 + it.startMinute }
+                    RoutineStorage.saveRoutines(this, routines)
+                    refreshList()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showEditDeleteDialog(position: Int) {
+        val item = routines[position]
+        val options = arrayOf("Edit", "Delete")
+        AlertDialog.Builder(this)
+            .setTitle(item.taskName)
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> showEditRoutineDialog(position)
+                    1 -> {
+                        routines.removeAt(position)
+                        RoutineStorage.saveRoutines(this, routines)
+                        refreshList()
+                    }
+                }
+            }
+            .show()
+    }
+
+    private fun showEditRoutineDialog(position: Int) {
+        val item = routines[position]
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_routine, null)
+        val startTimePicker = dialogView.findViewById<TimePicker>(R.id.startTimePicker)
+        val endTimePicker = dialogView.findViewById<TimePicker>(R.id.endTimePicker)
+        val taskNameEditText = dialogView.findViewById<EditText>(R.id.taskNameEditText)
+
+        startTimePicker.setIs24HourView(true)
+        endTimePicker.setIs24HourView(true)
+        startTimePicker.hour = item.startHour
+        startTimePicker.minute = item.startMinute
+        endTimePicker.hour = item.endHour
+        endTimePicker.minute = item.endMinute
+        taskNameEditText.setText(item.taskName)
+
+        AlertDialog.Builder(this)
+            .setTitle("Edit Routine")
+            .setView(dialogView)
+            .setPositiveButton("Save") { _, _ ->
+                val taskName = taskNameEditText.text.toString().trim()
+                if (taskName.isNotEmpty()) {
+                    val updatedItem = RoutineItem(
+                        startTimePicker.hour,
+                        startTimePicker.minute,
+                        endTimePicker.hour,
+                        endTimePicker.minute,
+                        taskName
+                    )
+                    routines[position] = updatedItem
                     routines.sortBy { it.startHour * 60 + it.startMinute }
                     RoutineStorage.saveRoutines(this, routines)
                     refreshList()
