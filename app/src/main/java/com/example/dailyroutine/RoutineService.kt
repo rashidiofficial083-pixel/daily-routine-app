@@ -18,7 +18,7 @@ class RoutineService : Service() {
         updateRunnable = object : Runnable {
             override fun run() {
                 updateNotification()
-                handler.postDelayed(this, 60000)
+                handler.postDelayed(this, 1000)
             }
         }
     }
@@ -28,7 +28,7 @@ class RoutineService : Service() {
         val status = RoutineChecker.getCurrentStatus(routines)
 
         if (status != null) {
-            val notification = buildNotification(status.taskName, RoutineChecker.formatTimeRemaining(status.minutesRemaining))
+            val notification = buildNotification(status.taskName, RoutineChecker.formatTimeRemaining(status.secondsRemaining))
             startForeground(1001, notification)
         } else {
             val notification = buildNotification("No active task", "Free time")
@@ -38,7 +38,7 @@ class RoutineService : Service() {
         RoutineWidgetProvider.updateAllWidgets(this)
 
         handler.removeCallbacks(updateRunnable)
-        handler.postDelayed(updateRunnable, 60000)
+        handler.postDelayed(updateRunnable, 1000)
 
         return START_STICKY
     }
@@ -48,7 +48,7 @@ class RoutineService : Service() {
         val status = RoutineChecker.getCurrentStatus(routines)
 
         if (status != null) {
-            NotificationHelper.showNotification(this, status.taskName, RoutineChecker.formatTimeRemaining(status.minutesRemaining))
+            NotificationHelper.showNotification(this, status.taskName, RoutineChecker.formatTimeRemaining(status.secondsRemaining))
         } else {
             NotificationHelper.showNotification(this, "No active task", "Free time")
         }
@@ -62,6 +62,7 @@ class RoutineService : Service() {
             .setContentTitle(title)
             .setContentText(text)
             .setOngoing(true)
+            .setOnlyAlertOnce(true)
             .setPriority(androidx.core.app.NotificationCompat.PRIORITY_LOW)
             .build()
 
