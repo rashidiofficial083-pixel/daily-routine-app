@@ -9,6 +9,9 @@ import android.widget.EditText
 import android.widget.ListView
 import android.widget.TimePicker
 import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.os.Build
+import androidx.core.app.ActivityCompat
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +28,14 @@ class MainActivity : AppCompatActivity() {
 
         routines = RoutineStorage.loadRoutines(this).toMutableList()
         refreshList()
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 100)
+        }
+
+        val serviceIntent = Intent(this, RoutineService::class.java)
+        startForegroundService(serviceIntent)
+
+
 
         addButton.setOnClickListener {
             showAddRoutineDialog()
