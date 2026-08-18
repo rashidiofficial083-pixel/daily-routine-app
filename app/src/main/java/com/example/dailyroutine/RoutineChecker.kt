@@ -6,32 +6,35 @@ object RoutineChecker {
 
     data class CurrentStatus(
         val taskName: String,
-        val minutesRemaining: Int
+        val secondsRemaining: Int
     )
 
     fun getCurrentStatus(routines: List<RoutineItem>): CurrentStatus? {
         val calendar = Calendar.getInstance()
-        val nowMinutes = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE)
+        val nowSeconds = calendar.get(Calendar.HOUR_OF_DAY) * 3600 +
+                calendar.get(Calendar.MINUTE) * 60 +
+                calendar.get(Calendar.SECOND)
 
         for (item in routines) {
-            val startMinutes = item.startHour * 60 + item.startMinute
-            val endMinutes = item.endHour * 60 + item.endMinute
+            val startSeconds = item.startHour * 3600 + item.startMinute * 60
+            val endSeconds = item.endHour * 3600 + item.endMinute * 60
 
-            if (nowMinutes in startMinutes until endMinutes) {
-                val remaining = endMinutes - nowMinutes
+            if (nowSeconds in startSeconds until endSeconds) {
+                val remaining = endSeconds - nowSeconds
                 return CurrentStatus(item.taskName, remaining)
             }
         }
         return null
     }
 
-    fun formatTimeRemaining(minutes: Int): String {
-        return if (minutes >= 60) {
-            val h = minutes / 60
-            val m = minutes % 60
-            "Time Remaining: ${h}h ${m}min"
+    fun formatTimeRemaining(totalSeconds: Int): String {
+        val h = totalSeconds / 3600
+        val m = (totalSeconds % 3600) / 60
+        val s = totalSeconds % 60
+        return if (h > 0) {
+            "Time Remaining: ${h}h ${m}m ${s}s"
         } else {
-            "Time Remaining: ${minutes}min"
+            "Time Remaining: ${m}m ${s}s"
         }
     }
 }
