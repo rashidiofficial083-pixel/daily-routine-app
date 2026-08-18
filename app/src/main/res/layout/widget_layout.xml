@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/widgetTaskName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No active task"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/widgetTimeRemaining"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Free time"
+        android:textColor="#444444"
+        android:textSize="14sp" />
+
+</LinearLayout>
