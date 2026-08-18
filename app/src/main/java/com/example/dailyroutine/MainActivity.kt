@@ -44,6 +44,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun triggerServiceRefresh() {
+        val serviceIntent = Intent(this, RoutineService::class.java)
+        startForegroundService(serviceIntent)
+    }
+
     private fun refreshList() {
         val displayList = routines.map {
             val startStr = String.format("%02d:%02d", it.startHour, it.startMinute)
@@ -79,6 +84,7 @@ class MainActivity : AppCompatActivity() {
                     routines.add(newItem)
                     routines.sortBy { it.startHour * 60 + it.startMinute }
                     RoutineStorage.saveRoutines(this, routines)
+                    triggerServiceRefresh()
                     refreshList()
                 }
             }
@@ -97,6 +103,7 @@ class MainActivity : AppCompatActivity() {
                     1 -> {
                         routines.removeAt(position)
                         RoutineStorage.saveRoutines(this, routines)
+                        triggerServiceRefresh()
                         refreshList()
                     }
                 }
@@ -135,6 +142,7 @@ class MainActivity : AppCompatActivity() {
                     routines[position] = updatedItem
                     routines.sortBy { it.startHour * 60 + it.startMinute }
                     RoutineStorage.saveRoutines(this, routines)
+                    triggerServiceRefresh()
                     refreshList()
                 }
             }
