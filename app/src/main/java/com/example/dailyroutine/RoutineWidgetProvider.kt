@@ -36,7 +36,7 @@ class RoutineWidgetProvider : AppWidgetProvider() {
 
             if (status != null) {
                 views.setTextViewText(R.id.widgetTaskName, status.taskName)
-                views.setTextViewText(R.id.widgetTimeRemaining, RoutineChecker.formatTimeRemaining(status.minutesRemaining))
+                views.setTextViewText(R.id.widgetTimeRemaining, RoutineChecker.formatTimeRemaining(status.secondsRemaining))
             } else {
                 views.setTextViewText(R.id.widgetTaskName, "No active task")
                 views.setTextViewText(R.id.widgetTimeRemaining, "Free time")
